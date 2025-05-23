@@ -36,6 +36,9 @@ IV. Establish secure communication between multiple sites or cloud networks.
 | **OpenVPN**   | Open-source, highly secure          | High       |
 
 ## VPN Workflow
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/f74588ef-d882-4d03-8d62-ea3b5400c6a7" alt="VPN Image" width="600" height="400">
+</div>
 
 ## Advantages of VPN
 | Feature                | Benefit                                            |
