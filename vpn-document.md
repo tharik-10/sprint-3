@@ -8,6 +8,16 @@
 | 2025-05-23  | 2025-05-23   |     Version 1         |  Mohamed Tharik |Priyanshu|Khushi|Mukul Joshi |Piyush Upadhyay|
 
 ## Table of Contents 
+1. [Introduction](#introduction)  
+2. [What is a VPN?](#what-is-a-vpn)  
+3. [Why We Use a VPN?](#why-we-use-a-vpn)  
+4. [Types of VPN Protocols](#types-of-vpn-protocols)  
+5. [VPN Workflow](#vpn-workflow)  
+6. [Advantages of VPN](#advantages-of-vpn)  
+7. [Best Practices for VPN](#best-practices-for-vpn)  
+8. [Conclusion](#conclusion)  
+9. [Contact Information](#contact-information)  
+10. [References](#references)
 
 ## Introduction 
 This document provides a comprehensive overview of VPN technology—including what it is, why it’s used, how it works, and best practices for implementation. It serves as a guide for network engineers, system administrators, and security professionals aiming to deploy or understand VPNs in enterprise or personal environments.
