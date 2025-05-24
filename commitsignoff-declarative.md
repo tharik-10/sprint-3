@@ -10,12 +10,12 @@
 1. [Introduction](#introduction)
 2. [Prerequisites](#prerequisites)
 3. [Steps to Setup Declarative Pipeline for Commit Sign-off](#steps-to-setup-declarative-pipeline-for-commit-sign-off)
-  - [Step 1: Make sure your repo has a Jenkinsfile](#step-1-make-sure-your-repo-has-a-jenkinsfile)
-  - [Step 2: Add GitHub credentials in Jenkins](#step-2-add-github-credentials-in-jenkins)
-  - [Step 3: Create a new Jenkins Pipeline job](#step-3-create-a-new-jenkins-pipeline-job)
-  - [Step 4: What the Pipeline Does](#step-4-what-the-pipeline-does)
-  - [Step 5: Create Jenkinsfile in Root Directory of Repository](#step-5-create-jenkinsfile-in-root-directory-of-repository)
-  - [Step 6: Run the Pipeline](#step-6-run-the-pipeline)
+   - [Step 1: Make sure your repo has a Jenkinsfile](#step-1-make-sure-your-repo-has-a-jenkinsfile)
+   - [Step 2: Add GitHub credentials in Jenkins](#step-2-add-github-credentials-in-jenkins)
+   - [Step 3: Create a new Jenkins Pipeline job](#step-3-create-a-new-jenkins-pipeline-job)
+   - [Step 4: What the Pipeline Does](#step-4-what-the-pipeline-does)
+   - [Step 5: Create Jenkinsfile in Root Directory of Repository](#step-5-create-jenkinsfile-in-root-directory-of-repository)
+   - [Step 6: Run the Pipeline](#step-6-run-the-pipeline)
 4. [Best Practices](#best-practices)
 5. [Conclusion](#conclusion)
 6. [Contact Information](#contact-information)
@@ -178,5 +178,9 @@ Implementing a Declarative Jenkins Pipeline with Commit Sign-off validation is a
 
 ## References
 
-| Link | Description |
-|------|-------------|
+| Link                                                                                                                                          | Description                                                                 |
+|-----------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| [Jenkins Pipelines](https://www.jenkins.io/doc/book/pipeline/)                                                                                | Official Jenkins documentation for creating and managing pipelines.        |
+| [Developer Certificate of Origin](https://developercertificate.org/)                                                                          | Explains the DCO and its purpose in open-source contributions.             |
+| [Git Commit Sign-off](https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---signoff)                                             | Git documentation explaining the `--signoff` option during commits.        |
+| [GitHub DCO Checks](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-required-commit-signing) | Guide for enabling and enforcing DCO checks on GitHub repositories.        |
