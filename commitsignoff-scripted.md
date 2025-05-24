@@ -14,7 +14,7 @@
    - [Step 2: Add GitHub Credentials in Jenkins](#step-2-add-github-credentials-in-jenkins)
    - [Step 3: Create a New Jenkins Pipeline Job](#step-3-create-a-new-jenkins-pipeline-job)
    - [Step 4: What the Pipeline Does](#step-4-what-the-pipeline-does)
-   - [Step 5: Create Jenkinsfile in Root Directory of Repository](#step-5-create-jenkinsfile-in-root-directory-of-repository)
+   - [Step 5: Create Jenkinsfile in Root Directory of Repository Using Scripted Pipeline](#step-5-create-jenkinsfile-in-root-directory-of-repository-using-scripted-pipeline)
    - [Step 6: Run the Pipeline](#step-6-run-the-pipeline)
 4. [Best Practices](#best-practices)
 5. [Conclusion](#conclusion)
@@ -63,7 +63,7 @@ Commit sign-off is a lightweight certification that ensures contributors are sub
 | Print Commit Message | Displays the latest commit message in the console      |
 | Push Changes         | Pushes to GitHub using secured credentials             |
 
-### Step 5: Create Jenkinsfile in Root Directory of Repository
+### Step 5: Create Jenkinsfile in Root Directory of Repository Using Scripted Pipeline
 ```bash
 node {
     def GIT_USER_NAME = "tharik-10"
