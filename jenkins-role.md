@@ -30,7 +30,7 @@ Jenkins is an open-source automation server widely used for building, testing, a
 | Ansible                    | Installed on the control node (your local system or Ansible server).        |
 | SSH Access                 | Ensure passwordless SSH access to the managed node(s).                      |
 | Sudo Privileges            | Required for installing packages and managing services on the target host. |
-| Java (OpenJDK 11+)         | Needed to run Jenkins. It will be installed via Ansible.                    |
+| Java (OpenJDK 17+)         | Needed to run Jenkins. It will be installed via Ansible.                    |
 | Internet Connectivity      | Required on the target machine to fetch Jenkins and Java packages.         |
 | Inventory Configuration    | Target host must be defined in Ansible inventory under `jenkins_servers`.  |
 
