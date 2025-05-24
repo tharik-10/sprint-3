@@ -50,6 +50,9 @@ Commit sign-off is a lightweight certification that ensures contributors are sub
 - Configure the pipeline to load from your GitHub repository using SCM.
 - Provide the repository URL, branch (e.g., `main`), and credentials (`github-token1`).
 - Ensure `Jenkinsfile` is set as the script path.
+
+![Screenshot-97](https://github.com/user-attachments/assets/0b261f4e-01cb-4e28-8cf1-3daba5c1fce4)
+
 ### Step 4: What the Pipeline Does
 | Stage                | Description                                            |
 | -------------------- | ------------------------------------------------------ |
@@ -59,6 +62,7 @@ Commit sign-off is a lightweight certification that ensures contributors are sub
 | Commit with Sign-off | Commits with `-s` flag to add `Signed-off-by` line     |
 | Print Commit Message | Displays the latest commit message in the console      |
 | Push Changes         | Pushes to GitHub using secured credentials             |
+
 ### Step 5: Create Jenkinsfile in Root Directory of Repository
 ```bash
 node {
@@ -108,9 +112,15 @@ node {
 }
 ```
 ### Step 6: Run the Pipeline
-- Click Build Now on your Jenkins job.
+- Click **Build Now** on your Jenkins job.
+
+![script-commitsignoff4](https://github.com/user-attachments/assets/f7b27fdb-79df-4239-a780-5c760de0f899)
+
 - Monitor the console output to see:
   - The commit message with sign-off.
+
+![script-commitsignoff3](https://github.com/user-attachments/assets/7a223dc3-1aed-4ed2-bb05-759bd42a1340)
+
   - Confirmation that the push succeeded or a message indicating there's nothing to push.
 
 ## Best Practices
