@@ -167,6 +167,7 @@ pipeline {
 | **Display clear messages**             | Make it easy for contributors to understand what failed and how to fix it                                                            |
 | **Enforce sign-off via hooks**         | Optionally enforce with pre-commit hooks or GitHub branch protection rules                                                           |
 | **Document contribution guidelines**   | Include DCO and sign-off process in `CONTRIBUTING.md`                                                                                |
+| **Use Declarative Pipeline for Readability** | Declarative syntax provides a structured and easy-to-read pipeline for team collaboration |
 
 ## Conclusion
 Implementing a Declarative Jenkins Pipeline with Commit Sign-off validation is a robust step toward securing your CI/CD processes. It ensures contributions are legitimate and traceable while keeping pipelines clean, standardized, and automated. Combining this with automated CI checks strengthens your development lifecycle by promoting responsibility, legal clarity, and quality assurance.
