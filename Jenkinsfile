@@ -53,7 +53,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-token1', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     sh """
-                    git push https://${USERNAME}:${PASSWORD}@github.com:tharik-10/sprint-3.git HEAD:main || echo "Nothing to push."
+                    git push https://${USERNAME}:${PASSWORD}@github.com/tharik-10/sprint-3.git HEAD:main || echo "Nothing to push."
                     """
                 }
             }
