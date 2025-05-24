@@ -14,7 +14,7 @@
    - [Step 2: Add GitHub credentials in Jenkins](#step-2-add-github-credentials-in-jenkins)
    - [Step 3: Create a new Jenkins Pipeline job](#step-3-create-a-new-jenkins-pipeline-job)
    - [Step 4: What the Pipeline Does](#step-4-what-the-pipeline-does)
-   - [Step 5: Create Jenkinsfile in Root Directory of Repository](#step-5-create-jenkinsfile-in-root-directory-of-repository)
+   - [Step 5: Create Jenkinsfile in Root Directory of Repository Using Declarative Pipeline](#step-5-create-jenkinsfile-in-root-directory-of-repository-using-declarative-pipeline)
    - [Step 6: Run the Pipeline](#step-6-run-the-pipeline)
 4. [Best Practices](#best-practices)
 5. [Conclusion](#conclusion)
@@ -69,7 +69,7 @@ Commit sign-off is a lightweight certification that ensures contributors are sub
 ![commitsign-declarative3](https://github.com/user-attachments/assets/0f0e6b2d-21ae-4ab1-9ff2-8e96c43db665)
 ![commitsignoff-declarative4](https://github.com/user-attachments/assets/f82997b9-d394-4c83-b792-ed66521537f1)
 
-### Step 5: Create Jenkinsfile in Root Directory of Repository
+### Step 5: Create Jenkinsfile in Root Directory of Repository Using Declarative Pipeline
 ```bash
 pipeline {
     agent any
