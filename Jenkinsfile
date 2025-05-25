@@ -1,47 +1,38 @@
 @Library('my-shared-lib@main') _
 
-def GIT_USER = 'tharik-10'
-def GIT_EMAIL = 'md.tharik@mygurukulam.co'
-def COMMIT_MESSAGE = 'Demo commit using shared library'
-def CRED_ID = 'github-token1'
-def BRANCH = 'main'  // Optional if you want to keep it dynamic
-
 pipeline {
-  agent any
+    agent any
 
-  stages {
-    stage('Checkout') {
-      steps {
-        script {
-          checkoutCode()
+    environment {
+        GIT_USER_NAME = "tharik-10"
+        GIT_USER_EMAIL = "md.tharik@mygurukulam.co"
+        COMMIT_MESSAGE = "This is the sample message that shows the commit signoff with using declarative pipeline"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
         }
-      }
-    }
 
-    stage('Print Commit Message') {
-      steps {
-        script {
-          printCommitMessage()
+        stage('Commit Sign-off') {
+            steps {
+                commitSignoff(
+                    gitUser: "${env.GIT_USER_NAME}",
+                    gitEmail: "${env.GIT_USER_EMAIL}",
+                    commitMessage: "${env.COMMIT_MESSAGE}"
+                )
+            }
         }
-      }
     }
 
-    stage('Commit Sign-off') {
-      steps {
-        script {
-          commitSignoff(GIT_USER, GIT_EMAIL, COMMIT_MESSAGE, CRED_ID, BRANCH)
+    post {
+        success {
+            echo "✅ Pipeline completed successfully with commit sign-off."
         }
-      }
+        failure {
+            echo "❌ Pipeline failed."
+        }
     }
-  }
-
-  post {
-    success {
-      echo '✅ Build succeeded with commit sign-off.'
-    }
-    failure {
-      echo '❌ Build failed.'
-    }
-  }
 }
-
