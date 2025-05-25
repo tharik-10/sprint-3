@@ -6,7 +6,7 @@ pipeline {
     environment {
         GIT_USER_NAME = "tharik-10"
         GIT_USER_EMAIL = "md.tharik@mygurukulam.co"
-        COMMIT_MESSAGE = "This is the sample message that shows the commit signoff with using declarative pipeline"
+        COMMIT_MESSAGE = "This is the sample message that shows the Commit Signoff with using Declarative pipeline using Jnekins Shared Library"
     }
 
     stages {
