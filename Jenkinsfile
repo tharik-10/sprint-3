@@ -6,31 +6,33 @@ def COMMIT_MESSAGE = 'Demo commit using shared library'
 def CRED_ID = 'github-token1'
 def REPO_URL = 'github.com/tharik-10/sprint-3.git'
 
-declarative {
-  pipeline {
-    agent any
+pipeline {
+  agent any
 
-    stages {
-      stage('Checkout') {
-        steps {
+  stages {
+    stage('Checkout') {
+      steps {
+        script {
           checkoutCode()
-        }
-      }
-
-      stage('Commit Sign-off') {
-        steps {
-          commitSignoff(GIT_USER, GIT_EMAIL, COMMIT_MESSAGE, CRED_ID, REPO_URL)
         }
       }
     }
 
-    post {
-      success {
-        echo '✅ Build succeeded with commit sign-off.'
+    stage('Commit Sign-off') {
+      steps {
+        script {
+          commitSignoff(GIT_USER, GIT_EMAIL, COMMIT_MESSAGE, CRED_ID, REPO_URL)
+        }
       }
-      failure {
-        echo '❌ Build failed.'
-      }
+    }
+  }
+
+  post {
+    success {
+      echo '✅ Build succeeded with commit sign-off.'
+    }
+    failure {
+      echo '❌ Build failed.'
     }
   }
 }
