@@ -1,3 +1,5 @@
+@Library('my-shared-lib@main') _
+
 pipeline {
     agent any
 
@@ -14,48 +16,13 @@ pipeline {
             }
         }
 
-        stage('Configure Git') {
+        stage('Commit Sign-off') {
             steps {
-                sh """
-                git config user.name "${GIT_USER_NAME}"
-                git config user.email "${GIT_USER_EMAIL}"
-                """
-            }
-        }
-
-        stage('Make Dummy Change') {
-            steps {
-                sh """
-                echo "Pipeline ran on: \$(date)" > pipeline-log.txt
-                git add pipeline-log.txt
-                """
-            }
-        }
-
-        stage('Commit with Sign-off') {
-            steps {
-                sh """
-                git commit -m "${COMMIT_MESSAGE}" -s || echo "No changes to commit."
-                """
-            }
-        }
-
-        stage('Print Commit Message') {
-            steps {
-                script {
-                    def message = sh(script: "git log -1 --pretty=format:'%B'", returnStdout: true).trim()
-                    echo "📝 Latest Commit Message:\n${message}"
-                }
-            }
-        }
-
-        stage('Push Changes') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'github-token1', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    sh """
-                    git push https://${USERNAME}:${PASSWORD}@github.com/tharik-10/sprint-3.git HEAD:main || echo "Nothing to push."
-                    """
-                }
+                commitSignoff(
+                    gitUser: "${env.GIT_USER_NAME}",
+                    gitEmail: "${env.GIT_USER_EMAIL}",
+                    commitMessage: "${env.COMMIT_MESSAGE}"
+                )
             }
         }
     }
