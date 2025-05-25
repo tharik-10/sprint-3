@@ -15,6 +15,7 @@
    * [Step 2: Add Common Scripts in `vars/`](#step-2-add-common-scripts-in-vars)
    * [Step 3: Configure Jenkins to Use the Shared Library](#step-3-configure-jenkins-to-use-the-shared-library)
    * [Step 4: Use the Shared Library in Jenkinsfile](#step-4-use-the-shared-library-in-jenkinsfile)
+   * [Step 5: Test the Shared Library](#step-5-test-the-shared-library)
 4. [Shared Library Content](#shared-library-content)
 5. [Best Practices](#best-practices)
 6. [Conclusion](#conclusion)
