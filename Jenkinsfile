@@ -30,7 +30,7 @@ pipeline {
     stage('Commit Sign-off') {
       steps {
         script {
-          commitSignoff(GIT_USER, GIT_EMAIL, COMMIT_MESSAGE, CRED_ID, REPO_URL)
+          commitSignoff(GIT_USER, GIT_EMAIL, COMMIT_MESSAGE, CRED_ID, REPO_URL, BRANCH)
         }
       }
     }
