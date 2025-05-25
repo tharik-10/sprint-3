@@ -4,18 +4,18 @@
 
 | Created    | Last updated | Version   | Author         | Internal Reviewer | L0     | L1          | L2              |
 | ---------- | ------------ | --------- | -------------- | ----------------- | ------ | ----------- | --------------- |
-| 2025-05-25 | 2025-05-25   | Version 2 | Mohamed Tharik | Priyanshu         | Khushi | Mukul Joshi | Piyush Upadhyay |
+| 2025-05-25 | 2025-05-25   | Version 1 | Mohamed Tharik | Priyanshu         | Khushi | Mukul Joshi | Piyush Upadhyay |
 
 ## Table of Contents
 
 1. [Introduction](#introduction)
 2. [Prerequisites](#prerequisites)
 3. [Steps to Setup Jenkins Shared Library for Commit Sign-off](#steps-to-setup-jenkins-shared-library-for-commit-sign-off)
-   * [Step 1: Create a Shared Library Repository](#step-1-create-a-shared-library-repository)
-   * [Step 2: Add Common Scripts in `vars/`](#step-2-add-common-scripts-in-vars)
-   * [Step 3: Configure Jenkins to Use the Shared Library](#step-3-configure-jenkins-to-use-the-shared-library)
-   * [Step 4: Use the Shared Library in Jenkinsfile](#step-4-use-the-shared-library-in-jenkinsfile)
-   * [Step 5: Test the Shared Library](#step-5-test-the-shared-library)
+   - [Step 1: Create a Shared Library Repository](#step-1-create-a-shared-library-repository)  
+   - [Step 2: Create the `commitSignoff.groovy` File](#step-2-create-the-commitsignoffgroovy-file)  
+   - [Step 3: Use Shared Library in Jenkinsfile](#step-3-use-shared-library-in-jenkinsfile)  
+   - [Step 4: Configure Shared Library in Jenkins UI](#step-4-configure-shared-library-in-jenkins-ui)  
+   - [Step 5: Run the Pipeline](#step-5-run-the-pipeline)  
 4. [Shared Library Content](#shared-library-content)
 5. [Best Practices](#best-practices)
 6. [Conclusion](#conclusion)
@@ -47,107 +47,119 @@ Commit sign-off ensures contributions are traceable, legally acceptable, and res
 jenkins-shared-library/
 ├── vars/
 │   ├── commitSignoff.groovy
-│   ├── checkoutCode.groovy
 ├── resources/
 │   └── (optional static templates)
 ├── src/
-│   └── org/myorg/utils/... (if needed)
+│   └── org/myorg/utils/... (if needed we can use it for Class to define)
 └── README.md
 ```
+![Screenshot-97 (2)](https://github.com/user-attachments/assets/b6d622e4-efae-4758-a044-c031ebea18d8)
 
-### Step 2: Add Common Scripts in `vars/`
-
-**Example: vars/commitSignoff.groovy**
+### Step 2: Create the commitSignoff.groovy File
+`vars/commitSignoff.groovy`
 
 ```groovy
-def call(String username, String email, String message, String credentialsId, String repoUrl, String branch = 'main') {
+def call(Map config = [:]) {
+    def gitUser = config.gitUser ?: "default-user"
+    def gitEmail = config.gitEmail ?: "default@example.com"
+    def commitMessage = config.commitMessage ?: "Default commit message"
+
+    echo "🔧 Configuring Git user and email..."
     sh """
-        git config user.name '${username}'
-        git config user.email '${email}'
-        echo "Pipeline ran on: \$(date)" > pipeline-log.txt
-        git add pipeline-log.txt
-        git commit -m '${message}' -s || echo 'No changes to commit.'
+    git config user.name "${gitUser}"
+    git config user.email "${gitEmail}"
     """
 
-    withCredentials([usernamePassword(credentialsId: credentialsId, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-        sh '''
-            git remote set-url origin https://${USERNAME}:${PASSWORD}@${repoUrl}
-            git push origin HEAD:${branch} || echo "Nothing to push."
-        '''
+    echo "📄 Making dummy change to pipeline-log.txt..."
+    sh """
+    echo "Pipeline ran on: \$(date)" > pipeline-log.txt
+    git add pipeline-log.txt
+    """
+
+    echo "✅ Committing with sign-off..."
+    sh """
+    git commit -m "${commitMessage}" -s || echo "No changes to commit."
+    """
+
+    echo "🚀 Pushing changes to remote..."
+    withCredentials([usernamePassword(credentialsId: 'github-token1', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        sh """
+        git push https://\${USERNAME}:\${PASSWORD}@github.com/tharik-10/sprint-3.git HEAD:main || echo "Nothing to push."
+        """
     }
-    echo "✅ Commit sign-off and push completed."
+
+    echo "📝 Printing latest commit message..."
+    def message = sh(script: "git log -1 --pretty=format:'%B'", returnStdout: true).trim()
+    echo "📝 Latest Commit Message:\n${message}"
 }
 ```
 
-**Example: vars/checkoutCode.groovy**
+### Step 3: Use Shared Library in Jenkinsfile
+In your app repo (`tharik-10/sprint-3`), your `Jenkinsfile` should now look like:
+```bash
+@Library('my-shared-lib@main') _
 
-```groovy
-def call() {
-    checkout scm
-    echo "✅ Code checkout completed."
-}
-```
-
-### Step 3: Configure Jenkins to Use the Shared Library
-
-* Navigate to **Manage Jenkins → Configure System**.
-* Under **Global Pipeline Libraries**, click **Add**:
-
-  * **Name**: `my-shared-lib`
-  * **Default Version**: `main` or a tag
-  * **Project Repository**: `https://github.com/tharik-10/jenkins-shared-library.git`
-  * **Credentials**: If private, use your GitHub token credentials
-
-### Step 4: Use the Shared Library in Jenkinsfile
-
-**Declarative Jenkinsfile Example:**
-
-```groovy
-@Library('my-shared-lib') _
-
-def GIT_USER = 'tharik-10'
-def GIT_EMAIL = 'md.tharik@mygurukulam.co'
-def COMMIT_MESSAGE = 'Demo commit using shared library'
-def CRED_ID = 'github-token1'
-def REPO_URL = 'github.com/tharik-10/sprint-3.git'
-
-declarative {
-  pipeline {
+pipeline {
     agent any
 
-    stages {
-      stage('Checkout') {
-        steps {
-          checkoutCode()
-        }
-      }
+    environment {
+        GIT_USER_NAME = "tharik-10"
+        GIT_USER_EMAIL = "md.tharik@mygurukulam.co"
+        COMMIT_MESSAGE = "This is the sample message that shows the Commit Signoff with using Declarative pipeline using Jnekins Shared Library"
+    }
 
-      stage('Commit Sign-off') {
-        steps {
-          commitSignoff(GIT_USER, GIT_EMAIL, COMMIT_MESSAGE, CRED_ID, REPO_URL)
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
         }
-      }
+
+        stage('Commit Sign-off') {
+            steps {
+                commitSignoff(
+                    gitUser: "${env.GIT_USER_NAME}",
+                    gitEmail: "${env.GIT_USER_EMAIL}",
+                    commitMessage: "${env.COMMIT_MESSAGE}"
+                )
+            }
+        }
     }
 
     post {
-      success {
-        echo '✅ Build succeeded with commit sign-off.'
-      }
-      failure {
-        echo '❌ Build failed.'
-      }
+        success {
+            echo "✅ Pipeline completed successfully with commit sign-off."
+        }
+        failure {
+            echo "❌ Pipeline failed."
+        }
     }
-  }
 }
 ```
-### Step 5: Test the Shared Library
-- Create a test GitHub repository with a `Jenkinsfile` that uses the shared library functions `(checkoutCode()` and `commitSignoff()`).
-- Set up a Jenkins pipeline job pointing to the test repo.
-- Trigger the job and verify:
-  - The code is checked out successfully.
-  - A signed-off commit is created and pushed.
-- Check the GitHub repo to confirm the new commit with `Signed-off-by` in the message.
-- Ensure credentials are correct and changes exist to trigger a commit.
+### Step 4: Configure Shared Library in Jenkins UI
+- Go to **Jenkins Dashboard > Manage Jenkins > Configure System**.
+- Scroll to **Global Trusted Pipeline Libraries**.
+- Add:
+  - **Name**: `my-shared-lib`
+  - **Default Version**: `main`
+  - **Project Repository**: `https://github.com/tharik-10/jenkins-shared-library.git`
+  - **Credentials** (if private): select the GitHub token
+  
+![Screenshot-97 (1)](https://github.com/user-attachments/assets/2ad582b8-d2a5-4fc8-87be-8fb3225a745f)
+
+### Step 5: Run the Pipeline
+Now when you run the pipeline, it should:
+![Screenshot-100](https://github.com/user-attachments/assets/8c56aa72-02c4-401c-be29-1b6a2357bbf9)
+
+- Checkout the code
+![Screenshot-97](https://github.com/user-attachments/assets/0073d8ac-e080-415f-b04c-e17b26a5646c)
+
+- Perform Git user config
+- Make a dummy file change
+- Sign-off commit
+- Push to GitHub
+- Print the commit message
+![Screenshot-99](https://github.com/user-attachments/assets/78a06677-e14a-44bb-a8e9-ccbb777b389a)
 
 ## Shared Library Content
 
