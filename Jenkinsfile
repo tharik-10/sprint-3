@@ -18,6 +18,14 @@ pipeline {
       }
     }
 
+    stage('Print Commit Message') {
+      steps {
+        script {
+          printCommitMessage()
+        }
+      }
+    }
+
     stage('Commit Sign-off') {
       steps {
         script {
@@ -36,3 +44,4 @@ pipeline {
     }
   }
 }
+
