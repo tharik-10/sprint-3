@@ -1,4 +1,4 @@
-@Library('my-shared-lib') _
+@Library('my-shared-lib@main') _
 
 def GIT_USER = 'tharik-10'
 def GIT_EMAIL = 'md.tharik@mygurukulam.co'
