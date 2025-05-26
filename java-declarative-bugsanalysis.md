@@ -100,17 +100,24 @@ pipeline {
 ### Step 3: Save and Run
 - Click **Save**.
 - Click **Build Now** to trigger the job.
+![Screenshot-97 (1)](https://github.com/user-attachments/assets/9fe8f025-50c8-43ed-8dd4-e4da804be210)
+
 - Monitor the **Console Output** for build, analysis, and quality gate results.
+![Screenshot-99](https://github.com/user-attachments/assets/943a07fe-3f60-4048-abba-8688573d54ec)
+![Screenshot-98](https://github.com/user-attachments/assets/25a83010-d5bb-4346-ab46-90a81816b296)
 
 ### Step 4: Verify Results in SonarQube
 - Log in to your SonarQube UI.
 - Locate the project salary-api.
+![Screenshot-97](https://github.com/user-attachments/assets/67ef1d28-caee-40d4-a0e5-ab2ce5fa9071)
+
 - Explore:
   - **Bugs**
   - **Code Smells**
   - **Security Hotspots**
   - **Duplications**
   - **Code Coverage (if configured)**
+![Screenshot-97 (2)](https://github.com/user-attachments/assets/9bb42cde-8a1f-48c7-9309-6498eea4f8dd)
 
 ## Best Practices
 | Best Practice                             | Description                                                                                    |
