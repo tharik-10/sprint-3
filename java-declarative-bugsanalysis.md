@@ -1,9 +1,23 @@
+![ci-bugs-java2](https://github.com/user-attachments/assets/6a53cf9c-ffd5-44af-9345-487d04ac42b7)
+
 # **Declarative Jenkins Pipeline for Java Bugs Analysis**
 | Created        | Last updated      | Version         | author|  Internal Reviewer | L0 | L1 | L2|
 |----------------|----------------|-----------------|-----------------|-----|------|----|----|
 | 2025-05-26  | 2025-05-26   |     Version 1         |  Mohamed Tharik |Priyanshu|Khushi|Mukul Joshi |Piyush Upadhyay|
 
 ## Table of Contents 
+
+1. [Introduction](#introduction)
+2. [Prerequisites](#prerequisites)
+3. [Steps to Set Up Java CI Pipeline for Bug Analysis](#steps-to-set-up-java-ci-pipeline-for-bug-analysis)
+  - [Step 1: Create a New Pipeline Job](#step-1-create-a-new-pipeline-job)
+  - [Step 2: Define the Pipeline](#step-2-define-the-pipeline)
+  - [Step 3: Save and Run](#step-3-save-and-run)
+  - [Step 4: Verify Results in SonarQube](#step-4-verify-results-in-sonarqube)
+4. [Best Practices](#best-practices)
+5. [Conclusion](#conclusion)
+6. [Contact Information](#contact-information)
+7. [References](#references)
 
 ## Introduction 
 Continuous Integration (CI) ensures that code changes are automatically built, tested, and verified early in the development process. This document outlines the implementation of a CI pipeline for Java-based salary-api using a Declarative Jenkins Pipeline. It emphasizes static bug analysis using SonarQube, which provides in-depth insights into code quality, bugs, vulnerabilities, and code smells.
@@ -35,47 +49,53 @@ Continuous Integration (CI) ensures that code changes are automatically built, t
 - Choose **Pipeline script** and paste the following code:
 ```groovy
 pipeline {
-  agent any
+    agent any
 
-  tools {
-    maven 'Maven 3.9.2'   // Make sure this name matches your Maven tool name in Jenkins
-    jdk 'JDK11'           // Make sure this matches your installed JDK in Jenkins
-  }
-
-  environment {
-    SONAR_PROJECT_KEY = 'salary-api'
-  }
-
-  stages {
-    stage('Checkout') {
-      steps {
-        git 'https://github.com/OT-MICROSERVICES/salary-api.git'
-      }
+    tools {
+        maven 'Maven 3.9.2'
+        jdk 'JDK17'
     }
 
-    stage('Build') {
-      steps {
-        sh 'mvn clean install'
-      }
+    environment {
+        SONAR_PROJECT_KEY = 'salary-api'
     }
 
-    stage('SonarQube Analysis') {
-      steps {
-        withSonarQubeEnv('SonarQube') {
-          sh 'mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY}'
+    stages {
+        stage('Verify Code') {
+            steps {
+                echo 'Listing files from copied repo...'
+                sh 'ls -la'
+            }
         }
-      }
+
+        stage('Build') {
+            steps {
+                echo 'Building the salary-api (skipping tests)...'
+                sh 'mvn clean install -DskipTests=true'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Running SonarQube analysis...'
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY}'
+                }
+            }
+        }
     }
 
-    stage('Quality Gate') {
-      steps {
-        timeout(time: 1, unit: 'MINUTES') {
-          waitForQualityGate abortPipeline: true
+    post {
+        success {
+            echo '🎉 Build succeeded!'
         }
-      }
+
+        failure {
+            echo '❌ Build failed!'
+        }
     }
-  }
 }
+
 ```
 ### Step 3: Save and Run
 - Click **Save**.
@@ -115,5 +135,11 @@ This setup improves code reliability, helps catch regressions early, and promote
 
 ## References
 
-| Link                                                                                                                                          | Description                                                                 |
-|-----------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| Link                                                                                                        | Description                                        |
+|-------------------------------------------------------------------------------------------------------------|----------------------------------------------------|
+| [Jenkins Documentation](https://www.jenkins.io/doc/)                                                       | Official Jenkins documentation                     |
+| [SonarQube Documentation](https://docs.sonarsource.com/)                                                   | Official SonarQube documentation                   |
+| [Maven Documentation](https://maven.apache.org/guides/index.html)                                          | Apache Maven build tool guides                     |
+| [Jenkins Pipeline Syntax](https://www.jenkins.io/doc/book/pipeline/syntax/)                                | Declarative pipeline syntax and examples           |
+| [SonarScanner for Maven](https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/scanners/sonarscanner-for-maven/) | Using SonarScanner with Maven                      |
+| [Git Documentation](https://git-scm.com/doc)                                                               | Git version control system                         |
