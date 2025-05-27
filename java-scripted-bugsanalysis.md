@@ -19,7 +19,7 @@ node {
 
         stage('Build') {
             echo 'Building the salary-api (skipping tests)...'
-            sh "${mvnHome}/bin/mvn clean install -DskipTests=true"
+            sh "${mvnHome}/bin/mvn clean install"
         }
 
         stage('SonarQube Analysis') {
