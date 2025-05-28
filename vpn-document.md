@@ -25,16 +25,16 @@ This document provides a comprehensive overview of VPN technology—including wh
 ## What is a VPN?
 A **Virtual Private Network (VPN)** is a secure communication tunnel that encrypts data transmitted between your device and a server. VPNs are commonly used to:
 
-I. Safeguard sensitive information from cyber threats.
-II. Provide secure remote access to internal systems or resources.
-III. Mask IP addresses and ensure anonymity.
-IV. Establish secure communication between multiple sites or cloud networks.
+I. Safeguard sensitive information from cyber threats.  
+II. Provide secure remote access to internal systems or resources.  
+III. Mask IP addresses and ensure anonymity.  
+IV. Establish secure communication between multiple sites or cloud networks.  
 
 ## Why We Use a VPN?
-**1. Secure Remote Access**: Employees can access internal networks and services safely from any location.
-**2. Site-to-Site Connectivity**: Connects branch offices or data centers securely over the internet.
-**3. Bypass Geo-Restrictions**: Access content or services that are restricted based on location.
-**4. Anonymity & Privacy**: Prevent ISPs or malicious actors from tracking user activities.
+**1. Secure Remote Access**: Employees can access internal networks and services safely from any location.  
+**2. Site-to-Site Connectivity**: Connects branch offices or data centers securely over the internet.  
+**3. Bypass Geo-Restrictions**: Access content or services that are restricted based on location.  
+**4. Anonymity & Privacy**: Prevent ISPs or malicious actors from tracking user activities.  
 
 ## Types of VPN Protocols
 | Protocol      | Use Case                            | Encryption |
