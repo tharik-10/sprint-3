@@ -17,25 +17,33 @@ pipeline {
     }
 
     stages {
-        stage('Verify Code') {
+        stage('Clone Repository') {
             steps {
-                echo 'Listing files from copied repo...'
-                sh 'ls -la'
+                echo '📥 Cloning salary-api repository...'
+                // Clean workspace before cloning
+                deleteDir()
+                // Clone your GitHub repo
+                git url: 'https://github.com/tharik-10/salary-api.git', branch: 'main'
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building the salary-api (skipping tests)...'
+                echo '🔧 Building the salary-api (skipping tests)...'
                 sh 'mvn clean install'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                echo 'Running SonarQube analysis...'
+                echo '🔍 Running SonarQube analysis...'
                 withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY}'
+                    sh '''
+                    mvn sonar:sonar \
+                        -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                        -Dsonar.java.binaries=target/classes \
+                        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                    '''
                 }
             }
         }
@@ -59,6 +67,7 @@ pipeline {
         }
     }
 }
+
 
 ```
 
