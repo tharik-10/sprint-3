@@ -69,6 +69,9 @@ node {
         } else if (currentBuild.result == 'FAILURE') {
             echo '❌ Build failed!'
         }
+        // Clean up workspace
+        echo 'Cleaning up workspace...'
+        deleteDir()
     }
 }
 ```
