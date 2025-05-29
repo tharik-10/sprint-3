@@ -34,12 +34,6 @@ def call(Map config = [:]) {
     git config user.email "${gitEmail}"
     """
 
-    echo "📄 Making dummy change to pipeline-log.txt..."
-    sh """
-    echo "Pipeline ran on: \$(date)" > pipeline-log.txt
-    git add pipeline-log.txt
-    """
-
     echo "✅ Committing with sign-off..."
     sh """
     git commit -m "${commitMessage}" -s || echo "No changes to commit."
@@ -56,6 +50,7 @@ def call(Map config = [:]) {
     def message = sh(script: "git log -1 --pretty=format:'%B'", returnStdout: true).trim()
     echo "📝 Latest Commit Message:\n${message}"
 }
+
 ```
 ## Use Shared Library in Jenkinsfile
 
@@ -68,13 +63,23 @@ pipeline {
     environment {
         GIT_USER_NAME = "tharik-10"
         GIT_USER_EMAIL = "md.tharik@mygurukulam.co"
-        COMMIT_MESSAGE = "This is the sample message that shows the Commit Signoff with using Declarative pipeline using Jnekins Shared Library"
+        COMMIT_MESSAGE = "This is the sample message that shows the Commit Signoff using Declarative pipeline and Shared Library"
     }
 
     stages {
         stage('Checkout Code') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Make Dummy Change') {
+            steps {
+                echo "📄 Making dummy change to pipeline-log.txt..."
+                sh '''
+                echo "Pipeline ran on: $(date)" > pipeline-log.txt
+                git add pipeline-log.txt
+                '''
             }
         }
 
@@ -98,6 +103,7 @@ pipeline {
         }
     }
 }
+
 ```
 ### Configure Shared Library in Jenkins UI
   
