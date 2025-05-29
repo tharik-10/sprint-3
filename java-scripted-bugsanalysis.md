@@ -5,27 +5,32 @@
 ## Define the Pipeline
 ```groovy
 node {
-    // Define tools
-    def mvnHome = tool name: 'Maven 3.9.2', type: 'maven'
-    def jdkHome = tool name: 'JDK17', type: 'jdk'
-    env.PATH = "${jdkHome}/bin:${mvnHome}/bin:${env.PATH}"
+    def mvnHome = tool name: 'Maven 3.9.2'
+    def jdkHome = tool name: 'JDK17'
+    env.PATH = "${jdkHome}/bin:${env.PATH}"
     env.SONAR_PROJECT_KEY = 'salary-api'
 
     try {
-        stage('Verify Code') {
-            echo 'Listing files from copied repo...'
-            sh 'ls -la'
+        stage('Clone Repository') {
+            echo '📥 Cloning salary-api repository...'
+            deleteDir()
+            git url: 'https://github.com/tharik-10/salary-api.git', branch: 'main'
         }
 
         stage('Build') {
-            echo 'Building the salary-api (skipping tests)...'
+            echo '🔧 Building the salary-api (skipping tests)...'
             sh "${mvnHome}/bin/mvn clean install"
         }
 
         stage('SonarQube Analysis') {
-            echo 'Running SonarQube analysis...'
+            echo '🔍 Running SonarQube analysis...'
             withSonarQubeEnv('SonarQube') {
-                sh "${mvnHome}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY}"
+                sh """
+                    ${mvnHome}/bin/mvn sonar:sonar \
+                        -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
+                        -Dsonar.java.binaries=target/classes \
+                        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                """
             }
         }
 
@@ -39,8 +44,10 @@ node {
     } catch (err) {
         echo "❌ Build failed! Reason: ${err}"
         currentBuild.result = 'FAILURE'
+        throw err
     }
 }
+
 ```
 ## Click **Build Now** to trigger the job.
 ![Screenshot-98](https://github.com/user-attachments/assets/e378537d-3473-423a-a428-7c2983736301)
