@@ -9,30 +9,39 @@
 pipeline {
     agent any
 
+    environment {
+        SONAR_PROJECT_KEY = 'salary-api'
+    }
+
     tools {
         maven 'Maven 3.9.2'
         jdk 'JDK17'
     }
 
-    environment {
-        SONAR_PROJECT_KEY = 'salary-api'
-    }
-
     stages {
-
-        stage('Common Stages') {
+        stage('Clone and Build') {
             steps {
                 script {
-                    commonStages()
+                    cloneAndBuild(
+                        gitUrl: 'https://github.com/tharik-10/salary-api.git',
+                        branch: 'main',
+                        mvnTool: 'Maven 3.9.2',
+                        jdkTool: 'JDK17'
+                    )
                 }
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                echo 'Running SonarQube analysis...'
+                echo '🔍 Running SonarQube analysis...'
                 withSonarQubeEnv('SonarQube') {
-                    sh "mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY}"
+                    sh '''
+                        mvn sonar:sonar \
+                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                            -Dsonar.java.binaries=target/classes \
+                            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                    '''
                 }
             }
         }
@@ -50,7 +59,6 @@ pipeline {
         success {
             echo '🎉 Build succeeded!'
         }
-
         failure {
             echo '❌ Build failed!'
         }
@@ -60,16 +68,27 @@ pipeline {
 ## Jenkins Shared Library Folder Directory and Script
 ```groovy
 def call(Map config = [:]) {
-    stage('Verify Code') {
-        echo 'Listing files from copied repo...'
-        sh 'ls -la'
+    def gitUrl = config.gitUrl ?: error("Missing gitUrl in config")
+    def branch = config.branch ?: 'main'
+    def mvnTool = config.mavenTool ?: 'Maven 3.9.2'
+    def jdkTool = config.jdkTool ?: 'JDK17'
+
+    def mvnHome = tool name: mvnTool
+    def jdkHome = tool name: jdkTool
+    env.PATH = "${jdkHome}/bin:${env.PATH}"
+
+    stage('Clone Repository') {
+        echo '📥 Cloning repository...'
+        deleteDir()
+        git url: gitUrl, branch: branch
     }
 
     stage('Build') {
-        echo 'Building the salary-api (skipping tests)...'
-        sh 'mvn clean install'
+        echo '🔧 Building the project...'
+        sh "${mvnHome}/bin/mvn clean install"
     }
 }
+
 ```
 ![Screenshot-100](https://github.com/user-attachments/assets/de6af916-889b-40d4-adec-5c0e5a5e2f6b)
 
