@@ -54,11 +54,13 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'github-token1', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     sh '''
                     git remote set-url origin https://${USERNAME}:${PASSWORD}@github.com/tharik-10/sprint-3.git
+                    git pull origin main --rebase || echo "Nothing to pull."
                     git push origin HEAD:main || echo "Nothing to push."
                     '''
                 }
             }
         }
+
     }
 
     post {
