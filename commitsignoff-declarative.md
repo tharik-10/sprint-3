@@ -19,41 +19,58 @@ pipeline {
     agent any
 
     environment {
-        GIT_USER_NAME = "tharik-10"
-        GIT_USER_EMAIL = "md.tharik@mygurukulam.co"
-        COMMIT_MESSAGE = "This is the sample message that shows the commit signoff with using declarative pipeline"
+        GIT_USER_NAME = 'tharik-10'
+        GIT_USER_EMAIL = 'md.tharik@mygurukulam.co'
+        COMMIT_MESSAGE = 'This is the sample message that shows the commit signoff with using declarative pipeline'
+    }
+
+    options {
+        skipStagesAfterUnstable()
     }
 
     stages {
+        stage('Prepare Workspace') {
+            steps {
+                echo '🧽 Cleaning workspace before checkout...'
+                deleteDir()
+            }
+        }
+
         stage('Checkout Code') {
             steps {
-                checkout scm
+                withCredentials([usernamePassword(credentialsId: 'github-token1', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    sh '''
+                        git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tharik-10/sprint-3.git .
+                        git checkout main
+                        git pull origin main --rebase
+                    '''
+                }
             }
         }
 
         stage('Configure Git') {
             steps {
-                sh """
-                git config user.name "${GIT_USER_NAME}"
-                git config user.email "${GIT_USER_EMAIL}"
-                """
+                sh '''
+                    git config user.name "${GIT_USER_NAME}"
+                    git config user.email "${GIT_USER_EMAIL}"
+                '''
             }
         }
 
         stage('Make Dummy Change') {
             steps {
-                sh """
-                echo "Pipeline ran on: \$(date)" > pipeline-log.txt
-                git add pipeline-log.txt
-                """
+                sh '''
+                    echo "Pipeline ran on: $(date)" > pipeline-log.txt
+                    git add pipeline-log.txt
+                '''
             }
         }
 
         stage('Commit with Sign-off') {
             steps {
-                sh """
-                git commit -m "${COMMIT_MESSAGE}" -s || echo "No changes to commit."
-                """
+                sh '''
+                    git commit -m "${COMMIT_MESSAGE}" -s || echo "No changes to commit."
+                '''
             }
         }
 
@@ -70,8 +87,8 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-token1', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     sh '''
-                    git remote set-url origin https://${USERNAME}:${PASSWORD}@github.com/tharik-10/sprint-3.git
-                    git push origin HEAD:main || echo "Nothing to push."
+                        git remote set-url origin https://${USERNAME}:${PASSWORD}@github.com/tharik-10/sprint-3.git
+                        git push origin main || echo "Nothing to push."
                     '''
                 }
             }
@@ -79,11 +96,17 @@ pipeline {
     }
 
     post {
-        success {
-            echo "✅ Pipeline completed successfully with commit sign-off."
+        always {
+            echo '🧹 Cleaning up workspace...'
+            deleteDir()
         }
+
+        success {
+            echo '✅ Pipeline completed successfully with commit sign-off.'
+        }
+
         failure {
-            echo "❌ Pipeline failed."
+            echo '❌ Pipeline failed.'
         }
     }
 }
