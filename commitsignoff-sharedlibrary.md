@@ -23,34 +23,39 @@ jenkins-shared-library/
 `vars/commitSignoff.groovy`
 
 ```groovy
-def call(Map config = [:]) {
-    def gitUser = config.gitUser ?: "default-user"
-    def gitEmail = config.gitEmail ?: "default@example.com"
-    def commitMessage = config.commitMessage ?: "Default commit message"
-
-    echo "🔧 Configuring Git user and email..."
-    sh """
-    git config user.name "${gitUser}"
-    git config user.email "${gitEmail}"
-    """
-
-    echo "✅ Committing with sign-off..."
-    sh """
-    git commit -m "${commitMessage}" -s || echo "No changes to commit."
-    """
-
-    echo "🚀 Pushing changes to remote..."
-    withCredentials([usernamePassword(credentialsId: 'github-token1', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-        sh """
-        git push https://\${USERNAME}:\${PASSWORD}@github.com/tharik-10/sprint-3.git HEAD:main || echo "Nothing to push."
-        """
-    }
-
-    echo "📝 Printing latest commit message..."
-    def message = sh(script: "git log -1 --pretty=format:'%B'", returnStdout: true).trim()
-    echo "📝 Latest Commit Message:\n${message}"
+def prepareWorkspace() {
+    echo '🧽 Cleaning workspace before checkout...'
+    deleteDir()
 }
 
+def checkoutCode(String repoUrl, String branch, String credentialsId) {
+    withCredentials([usernamePassword(credentialsId: credentialsId, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+        sh """
+            git clone https://\$GIT_USERNAME:\$GIT_PASSWORD@${repoUrl} .
+            git checkout ${branch}
+            git pull origin ${branch} --rebase
+        """
+    }
+}
+
+def configureGit(String userName, String userEmail) {
+    sh """
+        git config user.name "${userName}"
+        git config user.email "${userEmail}"
+    """
+}
+
+def cleanupWorkspace() {
+    echo '🧹 Cleaning up workspace...'
+    deleteDir()
+}
+
+// This makes the shared library callable without params to run prepare, checkout, configure
+def call(Map config) {
+    prepareWorkspace()
+    checkoutCode(config.repoUrl, config.branch, config.credentialsId)
+    configureGit(config.userName, config.userEmail)
+}
 ```
 ## Use Shared Library in Jenkinsfile
 
@@ -61,49 +66,82 @@ pipeline {
     agent any
 
     environment {
-        GIT_USER_NAME = "tharik-10"
-        GIT_USER_EMAIL = "md.tharik@mygurukulam.co"
-        COMMIT_MESSAGE = "This is the sample message that shows the Commit Signoff using Declarative pipeline and Shared Library"
+        GIT_USER_NAME = 'tharik-10'
+        GIT_USER_EMAIL = 'md.tharik@mygurukulam.co'
+        COMMIT_MESSAGE = 'This is the sample message that shows the commit signoff with using declarative pipeline'
+    }
+
+    options {
+        skipStagesAfterUnstable()
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Git Setup') {
             steps {
-                checkout scm
+                gitPipeline(
+                    repoUrl: 'github.com/tharik-10/sprint-3.git',
+                    branch: 'main',
+                    credentialsId: 'github-token1',
+                    userName: env.GIT_USER_NAME,
+                    userEmail: env.GIT_USER_EMAIL
+                )
             }
         }
 
         stage('Make Dummy Change') {
             steps {
-                echo "📄 Making dummy change to pipeline-log.txt..."
                 sh '''
-                echo "Pipeline ran on: $(date)" > pipeline-log.txt
-                git add pipeline-log.txt
+                    echo "Pipeline ran on: $(date)" > pipeline-log.txt
+                    git add pipeline-log.txt
                 '''
             }
         }
 
-        stage('Commit Sign-off') {
+        stage('Commit with Sign-off') {
             steps {
-                commitSignoff(
-                    gitUser: "${env.GIT_USER_NAME}",
-                    gitEmail: "${env.GIT_USER_EMAIL}",
-                    commitMessage: "${env.COMMIT_MESSAGE}"
-                )
+                sh '''
+                    git commit -m "${COMMIT_MESSAGE}" -s || echo "No changes to commit."
+                '''
+            }
+        }
+
+        stage('Print Commit Message') {
+            steps {
+                script {
+                    def message = sh(script: "git log -1 --pretty=format:'%B'", returnStdout: true).trim()
+                    echo "📝 Latest Commit Message:\n${message}"
+                }
+            }
+        }
+
+        stage('Push Changes') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'github-token1', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh '''
+                        git remote set-url origin https://${USERNAME}:${PASSWORD}@github.com/tharik-10/sprint-3.git
+                        git push origin main || echo "Nothing to push."
+                    '''
+                }
             }
         }
     }
 
     post {
-        success {
-            echo "✅ Pipeline completed successfully with commit sign-off."
+        always {
+            script {
+                gitPipeline.cleanupWorkspace()
+            }
         }
+
+        success {
+            echo '✅ Pipeline completed successfully with commit sign-off.'
+        }
+
         failure {
-            echo "❌ Pipeline failed."
+            echo '❌ Pipeline failed.'
         }
     }
 }
-
 ```
 ### Configure Shared Library in Jenkins UI
   
