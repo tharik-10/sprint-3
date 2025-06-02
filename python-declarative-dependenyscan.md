@@ -109,6 +109,82 @@ pipeline {
         }
     }
 }
+def notify(status, priority, slackChannel, emailRecipients) {
+    def slackColors = [SUCCESS: 'good', FAILURE: 'danger']
+    def slackTitles = [
+        SUCCESS: "✅ SUCCESS: ${env.JOB_NAME} (Build #${env.BUILD_NUMBER})",
+        FAILURE: "❌ FAILURE: ${env.JOB_NAME} (Build #${env.BUILD_NUMBER})"
+    ]
+    def slackTexts = [
+        SUCCESS: """
+            *Job Name:* ${env.JOB_NAME}
+            *Build No:* ${env.BUILD_NUMBER}
+            *Triggered By:* [Started by user admin]
+            *Job Done By:* Mohamed Tharik
+
+            This job has completed successfully. 🎉
+            *🔗 <${env.BUILD_URL}|Check logs here>*
+        """,
+        FAILURE: """
+            *Job Name:* ${env.JOB_NAME}
+            *Build No:* ${env.BUILD_NUMBER}
+            *Triggered By:* [Started by user admin]
+            *Job Done By:* Mohamed Tharik
+
+            This job has failed. ❗
+            *🔗 <${env.BUILD_URL}|Check logs here>*
+        """
+    ]
+
+    def emailSubjects = [
+        SUCCESS: "✅ SUCCESS: ${env.JOB_NAME} (Build #${env.BUILD_NUMBER})",
+        FAILURE: "❌ FAILURE: ${env.JOB_NAME} (Build #${env.BUILD_NUMBER})"
+    ]
+
+    def emailBodies = [
+        SUCCESS: """
+            <div style="border: 1px solid #c3e6cb; background-color: #d4edda; padding: 10px; border-radius: 5px;">
+                <h2 style="color: #155724;">✅ Jenkins Job SUCCESS</h2>
+                <p><b>Job Name:</b> ${env.JOB_NAME}</p>
+                <p><b>Build No:</b> ${env.BUILD_NUMBER}</p>
+                <p><b>Triggered By:</b> [Started by user admin]</p>
+                <p><b>Owner:</b> Mohamed Tharik</p>
+                <p>This job has completed successfully. 🎉</p>
+                <p>🔗 <a href='${env.BUILD_URL}' style="color: #155724;">Check logs here</a></p>
+            </div>
+        """,
+        FAILURE: """
+            <div style="border: 1px solid #f5c6cb; background-color: #f8d7da; padding: 10px; border-radius: 5px;">
+                <h2 style="color: #721c24;">❌ Jenkins Job FAILED</h2>
+                <p><b>Job Name:</b> ${env.JOB_NAME}</p>
+                <p><b>Build No:</b> ${env.BUILD_NUMBER}</p>
+                <p><b>Triggered By:</b> [Started by user admin]</p>
+                <p><b>Owner:</b> Mohamed Tharik</p>
+                <p>This job has failed. ❗</p>
+                <p>🔗 <a href='${env.BUILD_URL}' style="color: #721c24;">Check logs here</a></p>
+            </div>
+        """
+    ]
+
+    slackSend(
+        channel: slackChannel,
+        attachments: [[
+            color: slackColors[status],
+            title: slackTitles[status],
+            text: slackTexts[status],
+            mrkdwn_in: ["text"]
+        ]]
+    )
+
+    emailext(
+        subject: emailSubjects[status],
+        body: emailBodies[status],
+        to: emailRecipients,
+        mimeType: 'text/html',
+        recipientProviders: [[$class: 'RequesterRecipientProvider']]
+    )
+}
+
 ```
 ## Click **Build Now** to trigger the job.
 
